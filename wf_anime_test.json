@@ -1,0 +1,346 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "flux1-kontext-dev.safetensors.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "2": {
+    "inputs": {
+      "object_to_patch": "diffusion_model",
+      "residual_diff_threshold": 0.12000000000000002,
+      "start": 0,
+      "end": 1,
+      "max_consecutive_cache_hits": -1,
+      "model": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "ApplyFBCacheOnModel",
+    "_meta": {
+      "title": "Apply First Block Cache"
+    }
+  },
+  "3": {
+    "inputs": {
+      "max_shift": 1.2000000000000002,
+      "base_shift": 0.4000000000000001,
+      "width": 768,
+      "height": 1344,
+      "model": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingFlux",
+    "_meta": {
+      "title": "ModelSamplingFlux"
+    }
+  },
+  "4": {
+    "inputs": {
+      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux",
+      "device": "default"
+    },
+    "class_type": "DualCLIPLoader",
+    "_meta": {
+      "title": "DualCLIPLoader"
+    }
+  },
+  "5": {
+    "inputs": {
+      "text": "Change the style of image to anime style"
+    },
+    "class_type": "Text _O",
+    "_meta": {
+      "title": "Input Prompt"
+    }
+  },
+  "8": {
+    "inputs": {
+      "guidance": 3.5,
+      "conditioning": [
+        "24",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "CFG"
+    }
+  },
+  "9": {
+    "inputs": {
+      "conditioning": [
+        "8",
+        0
+      ],
+      "latent": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "ReferenceLatent"
+    }
+  },
+  "10": {
+    "inputs": {
+      "image": "skin_refined__00009_.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Input Image"
+    }
+  },
+  "11": {
+    "inputs": {
+      "image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "FluxKontextImageScale",
+    "_meta": {
+      "title": "FluxKontextImageScale"
+    }
+  },
+  "12": {
+    "inputs": {
+      "pixels": [
+        "11",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "13": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "14": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": 30,
+      "denoise": 1,
+      "model": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "15": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "16": {
+    "inputs": {
+      "dishonesty_factor": -0.02,
+      "start_percent": 0.06,
+      "end_percent": 0.75,
+      "sampler": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "LyingSigmaSampler",
+    "_meta": {
+      "title": "Lying Sigma Sampler"
+    }
+  },
+  "17": {
+    "inputs": {
+      "noise": [
+        "19",
+        0
+      ],
+      "guider": [
+        "18",
+        0
+      ],
+      "sampler": [
+        "16",
+        0
+      ],
+      "sigmas": [
+        "14",
+        0
+      ],
+      "latent_image": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "18": {
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "conditioning": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "19": {
+    "inputs": {
+      "noise_seed": [
+        "46",
+        0
+      ]
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "Seed Number"
+    }
+  },
+  "22": {
+    "inputs": {
+      "samples": [
+        "17",
+        0
+      ],
+      "vae": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "24": {
+    "inputs": {
+      "text": [
+        "40",
+        0
+      ],
+      "clip": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "25": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative Prompt"
+    }
+  },
+  "28": {
+    "inputs": {
+      "lines": "Capture a new shot of the character from a different camera angle—this time positioned slightly above and to the left of the character, creating a high 3/4 view from the right side of their face. Adjust the background perspective to align naturally with the elevated angle, ensuring consistency in spatial depth and lighting. Preserve the character’s facial features, hairstyle, clothing, expression, and overall style. Match the mood, color palette, and environmental details of the original scene\nShift the camera angle slightly to the right of the character, creating a subtle 3/4 view from the character’s left side, as if seen from a second camera. Adjust the background perspective accordingly to match the new angle, ensuring all background elements reflect the same spatial shift. Preserve the character’s facial features, expression, hairstyle, outfit, and lighting. Maintain consistency in visual style, mood, and environment.\nShift the camera angle slightly to the left of the character, creating a subtle 3/4 view from the character’s right side, as if seen from a second camera. Adjust the background perspective accordingly to match the new angle, ensuring all background elements reflect the same spatial shift. Preserve the character’s facial features, expression, hairstyle, outfit, and lighting. Maintain consistency in visual style, mood, and environment.\nCapture a close-up shot of the character from the chest up, focusing on the face and expression. Use a slight angle from the right to retain dimensionality. Ensure facial features, hairstyle, and expression remain unchanged. Adjust the background to show a shallow depth of field or blurred elements consistent with the original environment, maintaining lighting, color palette, and overall visual style.\nGenerate a side profile view of the character, facing to the right. Show the character from the shoulders up, highlighting the side of the face, hairstyle silhouette, and outfit details from this angle. Preserve the original facial features, expression, and style. Adjust the background perspective and lighting to align with the side view, maintaining continuity in environment, mood, and visual style.\nCreate a close-up shot of the character from a new camera angle—this time from a lower left perspective, angled slightly upward toward the face. Frame the character from the chest up, emphasizing facial features and expression without distortion. Ensure consistency in hairstyle, clothing, and expression. Adjust background depth and blur to match the new angle, keeping the same lighting and visual style for seamless multi-camera continuity\n\n",
+      "seed": 252
+    },
+    "class_type": "iToolsLineLoader",
+    "_meta": {
+      "title": "Prompt Template"
+    }
+  },
+  "35": {
+    "inputs": {
+      "filename_prefix": "drliq",
+      "images": [
+        "45",
+        1
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "40": {
+    "inputs": {
+      "select": 1,
+      "sel_mode": false,
+      "input1": [
+        "5",
+        0
+      ],
+      "input2": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "ImpactSwitch",
+    "_meta": {
+      "title": "Text Input Selection"
+    }
+  },
+  "45": {
+    "inputs": {
+      "empty_cache": true,
+      "gc_collect": true,
+      "unload_all_models": false,
+      "image_pass": [
+        "22",
+        0
+      ]
+    },
+    "class_type": "VRAM_Debug",
+    "_meta": {
+      "title": "VRAM Debug"
+    }
+  },
+  "46": {
+    "inputs": {
+      "seed": 784794349260228
+    },
+    "class_type": "Seed (rgthree)",
+    "_meta": {
+      "title": "Seed (rgthree)"
+    }
+  }
+}
